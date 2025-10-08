@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import collections
 import random
 
@@ -68,6 +68,9 @@ def train(q, q_target, memory, optimizer):
         q_a = q_out.gather(1,a)
         max_q_prime = q_target(s_prime).max(1)[0].unsqueeze(1)
         target = r + gamma * max_q_prime * done_mask
+        # 应该detach吗？不需要更新 q_target 的参数
+        # add by jeff, 2025-10-08
+        target = target.detach() 
         loss = F.smooth_l1_loss(q_a, target)
         
         optimizer.zero_grad()

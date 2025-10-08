@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,7 +8,7 @@ from torch.distributions import Categorical
 #Hyperparameters
 learning_rate = 0.0002
 gamma         = 0.98
-n_rollout     = 10
+n_rollout     = 5
 
 class ActorCritic(nn.Module):
     def __init__(self):
@@ -58,6 +58,8 @@ class ActorCritic(nn.Module):
         
         pi = self.pi(s, softmax_dim=1)
         pi_a = pi.gather(1,a)
+        # Actor 的任务是优化策略（Policy），即选择动作的概率分布，以最大化长期奖励。对数损失（ -log(pi_a) ）直接与动作概率相关，通过梯度上升来调整动作概率。
+        # Critic 的任务是优化状态值函数（Value Function），即评估状态的价值，以最小化状态值函数与真实状态值的差值。平滑 L1 损失（Huber Loss）结合了 L1 和 L2 损失的优点：
         loss = -torch.log(pi_a) * delta.detach() + F.smooth_l1_loss(self.v(s), td_target.detach())
 
         self.optimizer.zero_grad()
