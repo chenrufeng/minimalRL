@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -31,6 +31,8 @@ class Policy(nn.Module):
         self.optimizer.zero_grad()
         for r, prob in self.data[::-1]:
             R = r + gamma * R
+            # print(prob)
+            # print(torch.log(prob))
             loss = -torch.log(prob) * R
             loss.backward()
         self.optimizer.step()
@@ -51,7 +53,8 @@ def main():
             prob = pi(torch.from_numpy(s).float())
             m = Categorical(prob)
             a = m.sample()
-            s_prime, r, done, truncated, info = env.step(a.item())
+            s_prime, r, terminated, truncated, info = env.step(a.item())
+            done = terminated or truncated
             pi.put_data((r,prob[a]))
             s = s_prime
             score += r

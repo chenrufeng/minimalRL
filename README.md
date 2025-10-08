@@ -1,3 +1,6 @@
+#　https://github.com/chenrufeng/minimalRL
+#　https://gymnasium.farama.org/
+
 # minimalRL-pytorch
 
 Implementations of basic RL algorithms with minimal lines of codes! (PyTorch based)
